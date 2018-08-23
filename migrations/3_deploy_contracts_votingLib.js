@@ -1,6 +1,3 @@
-
-var ImpersonationCaller = artifacts.require("./ImpersonationCaller");
-var DaoBaseImpersonated = artifacts.require("./DaoBaseImpersonated");
 var DaoBaseWithUnpackers = artifacts.require("./DaoBaseWithUnpackers");
 var GenericCaller = artifacts.require("./GenericCaller");
 var GenericCallerLib = artifacts.require("./GenericCallerLib");
@@ -11,8 +8,6 @@ var DaoBaseAuto = artifacts.require("./DaoBaseAuto");
 
 module.exports = function (deployer) {
 	deployer.deploy(VotingLib).then(() => {
-		deployer.link(VotingLib, ImpersonationCaller);
-		deployer.link(VotingLib, DaoBaseImpersonated);
 		deployer.link(VotingLib, Voting);
 		deployer.link(VotingLib, GenericCaller);
 		deployer.link(VotingLib, GenericCallerLib);

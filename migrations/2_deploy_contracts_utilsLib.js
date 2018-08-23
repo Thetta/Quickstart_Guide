@@ -1,7 +1,4 @@
 var UtilsLib = artifacts.require("./UtilsLib");
-
-//var DaoBase = artifacts.require("./DaoBase");
-var ImpersonationCaller = artifacts.require("./ImpersonationCaller");
 var DaoBaseImpersonated = artifacts.require("./DaoBaseImpersonated");
 var DaoBaseWithUnpackers = artifacts.require("./DaoBaseWithUnpackers");
 var GenericCaller = artifacts.require("./GenericCaller");
@@ -17,18 +14,14 @@ var StdDaoToken = artifacts.require("./StdDaoToken");
 
 module.exports = function (deployer) {
 	deployer.deploy(UtilsLib).then(() => {
-		deployer.link(UtilsLib, ImpersonationCaller);
 		deployer.link(UtilsLib, DaoBaseImpersonated);
 		deployer.link(UtilsLib, DaoBaseWithUnpackers);
 		deployer.link(UtilsLib, GenericCaller);
 		deployer.link(UtilsLib, VotingLib);
-		// deployer.link(UtilsLib, MoneyflowAuto);
 		deployer.link(UtilsLib, DaoBaseAuto);
 		deployer.link(UtilsLib, DaoBaseWithUnpackersMock);
 		deployer.link(UtilsLib, DaoBaseMock);
 		deployer.link(UtilsLib, DaoStorage);
 		deployer.link(UtilsLib, StdDaoToken);
-		// deployer.link(UtilsLib, Voting);
-		// deployer.link(UtilsLib, VotingLib);
 	});
 };
