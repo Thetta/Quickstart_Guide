@@ -1,5 +1,5 @@
 {
-  "name": "robonomika_quickstart",
+  "name": "quickstart",
   "version": "1.0.0",
   "description": "",
   "main": "truffle-config.js",
@@ -7,7 +7,7 @@
     "test": "test"
   },
   "dependencies": {
-    "@thetta/core": "^1.3.4",
+    "@thetta/core": "^1.4.1",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "chai-bignumber": "^2.0.2",
@@ -18,16 +18,16 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "scripts/test.sh"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Thetta/Robonomika_Quickstart.git"
+    "url": "git+https://github.com/Thetta/Quickstart_Guide.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Thetta/Robonomika_Quickstart/issues"
+    "url": "https://github.com/Thetta/Quickstart_Guide"
   },
-  "homepage": "https://github.com/Thetta/Robonomika_Quickstart#readme"
+  "homepage": "https://github.com/Thetta/Quickstart_Guide#readme"
 }

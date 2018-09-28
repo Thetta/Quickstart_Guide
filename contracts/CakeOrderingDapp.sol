@@ -12,12 +12,12 @@ contract CakeOrderingDapp {
 	constructor() {
 	}
 
-   function buySomeCakeInternal(IDaoBase _dao, address _tokenAddress) internal { 
+   function buySomeCakeInternal(IDaoBase _daoBase, address _tokenAddress) internal { 
 		// Писать 1 в переменную X
 		x = 1;
 
 		// Начислять 100 ERC20 токенов вызывающему
-		_dao.issueTokens(_tokenAddress, msg.sender, 100);
+		_daoBase.issueTokens(_tokenAddress, msg.sender, 100);
 	}
 }
 
@@ -25,11 +25,11 @@ contract CakeOrderingOrganizaion is CakeOrderingDapp, DaoClient {
 	address tokenAddress;
 	bytes32 public constant BUY_SOME_CAKE = keccak256("buySomeCake");
 
-	constructor(IDaoBase _dao, address _tokenAddress) public DaoClient(_dao){
+	constructor(IDaoBase _daoBase, address _tokenAddress) public DaoClient(_daoBase){
 		tokenAddress = _tokenAddress;
 	}
 
    function buySomeCake() public isCanDo(BUY_SOME_CAKE) { 
-		buySomeCakeInternal(dao, tokenAddress);
+		buySomeCakeInternal(daoBase, tokenAddress);
 	}
 }
