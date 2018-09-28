@@ -1,0 +1,25 @@
+# JetBrains PyCharm
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code
+.vscode
+
+# Truffle build
+build/*
+
+# coverage
+coverage/*
+coverage.json
+
+# nodejs modules
+node_modules/*
+
+# env
+.env
+
+.DS_Store
+
+package-lock.json
