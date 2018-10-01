@@ -14,6 +14,9 @@ contract('CakeOrderingOrganizaion', (accounts) => {
 	const creator = accounts[0];
 	const acc1 = accounts[1];
 	let cake;
+	let token;
+	let store;
+	let daoBase;
 
 	beforeEach(async()=> {
 		// create contracts
@@ -25,13 +28,15 @@ contract('CakeOrderingOrganizaion', (accounts) => {
 		const issueTokens = await daoBase.ISSUE_TOKENS();
 		const buySomeCake = await cake.BUY_SOME_CAKE();
 
-		// set permissions
-		await daoBase.allowActionByAddress(issueTokens, cake.address);
-		await daoBase.allowActionByAddress(creator, buySomeCake);
-
-		// transfer ownership
 		await token.transferOwnership(daoBase.address);
 		await store.transferOwnership(daoBase.address);
+		
+		// // // set permissions
+		await daoBase.allowActionByAddress(issueTokens, cake.address);
+		await daoBase.allowActionByAddress(buySomeCake, creator);
+
+		// // // transfer ownership
+
 		await daoBase.renounceOwnership();
 	});
 
@@ -51,8 +56,8 @@ contract('CakeOrderingOrganizaion', (accounts) => {
 
 		it('should mint 100 tokens', async () => {
 			await cake.buySomeCake();
-			let cakeToken = MintableToken.at(await cake.cakeToken());
-			assert.equal((await cakeToken.balanceOf(creator)).toNumber(10), 100);
+			let tokenAddress = MintableToken.at(await cake.tokenAddress());
+			assert.equal((await tokenAddress.balanceOf(creator)).toNumber(10), 100);
 		});
 	});
 });

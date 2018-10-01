@@ -22,7 +22,7 @@ contract CakeOrderingDapp {
 }
 
 contract CakeOrderingOrganizaion is CakeOrderingDapp, DaoClient {
-	address tokenAddress;
+	address public tokenAddress;
 	bytes32 public constant BUY_SOME_CAKE = keccak256("buySomeCake");
 
 	constructor(IDaoBase _daoBase, address _tokenAddress) public DaoClient(_daoBase){
