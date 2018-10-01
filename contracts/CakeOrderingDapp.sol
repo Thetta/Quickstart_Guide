@@ -22,11 +22,23 @@ contract CakeOrderingOrganizaion is CakeOrderingDapp, DaoClient {
 	address public tokenAddress;
 	bytes32 public constant BUY_SOME_CAKE = keccak256("buySomeCake");
 
-	constructor(IDaoBase _daoBase, address _tokenAddress) public DaoClient(_daoBase){
+	constructor(DaoBase _daoBase, address _tokenAddress) public DaoClient(_daoBase){
 		tokenAddress = _tokenAddress;
 	}
 
 	function buySomeCake() public isCanDo(BUY_SOME_CAKE) { 
 		buySomeCakeInternal(daoBase, tokenAddress);
 	}
+
+	function setPermissions(DaoBase _daoBase, address _boss) public {
+		// Add some address (user or contract) to Employee group
+		_daoBase.addGroupMember("Managers", _boss); 
+
+		// This will allow any address that is a member of "Managers" group 
+		// to execute "issueTokens" method:
+		_daoBase.allowActionByAnyMemberOfGroup(_daoBase.ISSUE_TOKENS(), "Managers");
+		        
+		// To allow specific address to execute action without any voting:
+		_daoBase.allowActionByAddress(_daoBase.BURN_TOKENS(), _boss);
+	}	
 }

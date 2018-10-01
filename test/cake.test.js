@@ -24,14 +24,18 @@ contract('CakeOrderingOrganizaion', (accounts) => {
 		store = await DaoStorage.new([token.address],{from: creator});
 		daoBase = await DaoBase.new(store.address,{ from: creator });
 		cake = await CakeOrderingOrganizaion.new(daoBase.address, token.address);
+		
 
 		const issueTokens = await daoBase.ISSUE_TOKENS();
+		const manageGroups = await daoBase.MANAGE_GROUPS();
 		const buySomeCake = await cake.BUY_SOME_CAKE();
-
+				
 		await token.transferOwnership(daoBase.address);
 		await store.transferOwnership(daoBase.address);
-		
+
 		// // // set permissions
+		await daoBase.allowActionByAddress(manageGroups, cake.address);
+		await cake.setPermissions(daoBase.address, creator);
 		await daoBase.allowActionByAddress(issueTokens, cake.address);
 		await daoBase.allowActionByAddress(buySomeCake, creator);
 
