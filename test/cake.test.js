@@ -4,6 +4,7 @@ var MintableToken = artifacts.require("./MintableToken");
 var StdDaoToken = artifacts.require("./StdDaoToken");
 var DaoStorage = artifacts.require("./DaoStorage");
 var DaoBase = artifacts.require("./DaoBase");
+var Bakery = artifacts.require("./Bakery");
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -12,56 +13,68 @@ require('chai')
 
 contract('CakeOrderingOrganizaion', (accounts) => {
 	const creator = accounts[0];
-	const acc1 = accounts[1];
-	let cake;
+	const user1 = accounts[1];
+	const user2 = accounts[2];
+	const user3 = accounts[3];
+	let cakeOrderingDAO;
 	let token;
 	let store;
 	let daoBase;
+	let bakery;
 
 	beforeEach(async()=> {
 		// create contracts
 		token = await StdDaoToken.new("CakeTokenb","CAKE",18, true, true, 1000000000);
 		store = await DaoStorage.new([token.address],{from: creator});
 		daoBase = await DaoBase.new(store.address,{ from: creator });
-		cake = await CakeOrderingOrganizaion.new(daoBase.address, token.address);
+		bakery = await Bakery.new();
+		cakeOrderingDAO = await CakeOrderingOrganizaion.new(bakery.address, daoBase.address);
 		
 
 		const issueTokens = await daoBase.ISSUE_TOKENS();
 		const manageGroups = await daoBase.MANAGE_GROUPS();
-		const buySomeCake = await cake.BUY_SOME_CAKE();
+		const buySomeCake = await cakeOrderingDAO.BUY_SOME_CAKE();
 				
+		// // // transfer ownership		
 		await token.transferOwnership(daoBase.address);
 		await store.transferOwnership(daoBase.address);
 
 		// // // set permissions
-		await daoBase.allowActionByAddress(manageGroups, cake.address);
-		await cake.setPermissions(daoBase.address, creator);
-		await daoBase.allowActionByAddress(issueTokens, cake.address);
+		await daoBase.allowActionByAddress(manageGroups, cakeOrderingDAO.address);
+		await cakeOrderingDAO.setPermissions(daoBase.address, creator, user3);
+		await daoBase.allowActionByAddress(issueTokens, cakeOrderingDAO.address);
 		await daoBase.allowActionByAddress(buySomeCake, creator);
-
-		// // // transfer ownership
+		await daoBase.allowActionByAddress(buySomeCake, user2);
 
 		await daoBase.renounceOwnership();
 	});
 
 	describe('buySomeCake()', () => {
 		it('should be callable by owner', async () => {
-			await cake.buySomeCake().should.be.fulfilled;
+			await cakeOrderingDAO.buySomeCake().should.be.fulfilled;
 		});
 
 		it('should not be callable by non-owner', async () => {
-			await cake.buySomeCake({from: acc1}).should.be.rejectedWith('revert');
+			await cakeOrderingDAO.buySomeCake({from: user1}).should.be.rejectedWith('revert');
 		});
 
-		it('should set x to 1', async () => {
-			await cake.buySomeCake();
-			assert.equal((await cake.x()).toNumber(10), 1);
+		it('should increase cakesOrdered', async () => {
+			await cakeOrderingDAO.buySomeCake();
+			assert.equal((await cakeOrderingDAO.cakesOrdered()).toNumber(10), 1);
 		});
 
-		it('should mint 100 tokens', async () => {
-			await cake.buySomeCake();
-			let tokenAddress = MintableToken.at(await cake.tokenAddress());
-			assert.equal((await tokenAddress.balanceOf(creator)).toNumber(10), 100);
+		it('should increase cakesOrdered two times', async () => {
+			await cakeOrderingDAO.buySomeCake();
+			assert.equal((await cakeOrderingDAO.cakesOrdered()).toNumber(10), 1);
+
+			await cakeOrderingDAO.buySomeCake({from: user2});
+			assert.equal((await cakeOrderingDAO.cakesOrdered()).toNumber(10), 2);			
+		});		
+
+		it('should produce cake', async () => {
+			await cakeOrderingDAO.buySomeCake();
+			
+			assert.equal((await bakery.isCakeProducedForAddress(creator)), true);
 		});
 	});
 });
