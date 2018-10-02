@@ -28,7 +28,7 @@ contract('CakeOrderingOrganizaion', (accounts) => {
 		store = await DaoStorage.new([token.address],{from: creator});
 		daoBase = await DaoBase.new(store.address,{ from: creator });
 		bakery = await Bakery.new();
-		cakeOrderingDAO = await CakeOrderingOrganizaion.new(bakery.address, daoBase.address);
+		cakeOrderingDAO = await CakeOrderingOrganizaion.new(bakery.address, daoBase.address, token.address);
 		
 
 		const issueTokens = await daoBase.ISSUE_TOKENS();
@@ -41,10 +41,11 @@ contract('CakeOrderingOrganizaion', (accounts) => {
 
 		// // // set permissions
 		await daoBase.allowActionByAddress(manageGroups, cakeOrderingDAO.address);
-		await cakeOrderingDAO.setPermissions(daoBase.address, creator, user3);
+		await cakeOrderingDAO.setPermissions(creator, user3);
 		await daoBase.allowActionByAddress(issueTokens, cakeOrderingDAO.address);
 		await daoBase.allowActionByAddress(buySomeCake, creator);
 		await daoBase.allowActionByAddress(buySomeCake, user2);
+		await daoBase.allowActionByAddress(issueTokens, cakeOrderingDAO.address);
 
 		await daoBase.renounceOwnership();
 	});
@@ -60,21 +61,24 @@ contract('CakeOrderingOrganizaion', (accounts) => {
 
 		it('should increase cakesOrdered', async () => {
 			await cakeOrderingDAO.buySomeCake();
-			assert.equal((await cakeOrderingDAO.cakesOrdered()).toNumber(10), 1);
+			assert.equal((await bakery.cakesOrdered()).toNumber(10), 1);
 		});
 
 		it('should increase cakesOrdered two times', async () => {
 			await cakeOrderingDAO.buySomeCake();
-			assert.equal((await cakeOrderingDAO.cakesOrdered()).toNumber(10), 1);
-
 			await cakeOrderingDAO.buySomeCake({from: user2});
-			assert.equal((await cakeOrderingDAO.cakesOrdered()).toNumber(10), 2);			
+			assert.equal((await bakery.cakesOrdered()).toNumber(10), 2);			
 		});		
 
 		it('should produce cake', async () => {
 			await cakeOrderingDAO.buySomeCake();
-			
 			assert.equal((await bakery.isCakeProducedForAddress(creator)), true);
 		});
+
+		it('should mint 100 tokens', async () => {
+			await cakeOrderingDAO.buySomeCake();
+			let tokenAddress = MintableToken.at(await cakeOrderingDAO.tokenAddress());
+			assert.equal((await tokenAddress.balanceOf(creator)).toNumber(10), 100);
+		});		
 	});
 });

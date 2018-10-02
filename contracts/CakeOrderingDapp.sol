@@ -1,11 +1,7 @@
 pragma solidity ^0.4.24;
 
-import "zeppelin-solidity/contracts/ownership/Ownable.sol";
-import "zeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
-
 import "@thetta/core/contracts/DaoClient.sol";
 import "@thetta/core/contracts/DaoBase.sol";
-import "@thetta/core/contracts/IDaoBase.sol";
 
 contract Bakery {
 	event cakeProduced();
@@ -20,9 +16,6 @@ contract Bakery {
 }
 
 contract CakeOrderingDapp {
-	constructor() {
-	}
-
 	function buySomeCakeInternal(Bakery _bakery) internal { 
 		_bakery.buySomeCake(msg.sender);
 	}
@@ -30,24 +23,31 @@ contract CakeOrderingDapp {
 
 contract CakeOrderingOrganizaion is CakeOrderingDapp, DaoClient {
 	bytes32 public constant BUY_SOME_CAKE = keccak256("buySomeCake");
+	address public tokenAddress;
+	DaoBase public daoBase;
+	Bakery public bakery;
 
-	constructor(Bakery _bakery, DaoBase _daoBase) public DaoClient(_daoBase){
+	constructor(Bakery _bakery, DaoBase _daoBase, address _tokenAddress) public DaoClient(_daoBase){
 		bakery = _bakery;
+		tokenAddress = _tokenAddress;
+		daoBase = _daoBase;
 	}
 
-	function buySomeCake() public isCanDo(BUY_SOME_CAKE) { 
+	function buySomeCake() public isCanDo(BUY_SOME_CAKE) {
+		daoBase.issueTokens(tokenAddress, msg.sender, 100);
 		buySomeCakeInternal(bakery);
 	}
 
-	function setPermissions(DaoBase _daoBase, address _boss, address _user) public {
+	function setPermissions(address _boss, address _user) public {
 		// Add some address (user or contract) to Employee group
-		_daoBase.addGroupMember("Managers", _boss); 
+		daoBase.addGroupMember("Managers", _boss); 
+		daoBase.allowActionByAddress(daoBase.ISSUE_TOKENS(), _boss);
 
 		// This will allow any address that is a member of "Managers" group 
 		// to execute "issueTokens" method:
-		_daoBase.allowActionByAnyMemberOfGroup(BUY_SOME_CAKE, "Managers");
+		daoBase.allowActionByAnyMemberOfGroup(BUY_SOME_CAKE, "Managers");
 		        
 		// To allow specific address to execute action without any voting:
-		_daoBase.allowActionByAddress(BUY_SOME_CAKE, _user);
-	}	
+		daoBase.allowActionByAddress(BUY_SOME_CAKE, _user);
+	}
 }
