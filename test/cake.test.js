@@ -23,28 +23,17 @@ contract('CakeOrderingOrganizaion', (accounts) => {
 
 	beforeEach(async()=> {
 		// create contracts
-		token = await StdDaoToken.new("CakeTokenb","CAKE",18, true, true, 1000000000);
-		store = await DaoStorage.new([token.address],{from: creator});
-		daoBase = await DaoBase.new(store.address,{ from: creator });
-		bakery = await Bakery.new();
-		cakeOrderingDAO = await CakeOrderingOrganizaion.new(bakery.address, daoBase.address);
+		let token = await StdDaoToken.new("CakeTokenb","CAKE",18, true, true, 1000000000);
+		let store = await DaoStorage.new([token.address]);
+		let daoBase = await DaoBase.new(store.address);
 
-		const issueTokens = await daoBase.ISSUE_TOKENS();
-		const manageGroups = await daoBase.MANAGE_GROUPS();
-		const buySomeCake = await cakeOrderingDAO.BUY_SOME_CAKE();
-
-		// // // transfer ownership		
 		await token.transferOwnership(daoBase.address);
 		await store.transferOwnership(daoBase.address);
 
-		// // // set permissions
-		await daoBase.allowActionByAddress(manageGroups, cakeOrderingDAO.address);
-		await cakeOrderingDAO.setPermissions(creator, user3);
-		await daoBase.allowActionByAddress(issueTokens, cakeOrderingDAO.address);
-		await daoBase.allowActionByAddress(buySomeCake, creator);
-		await daoBase.allowActionByAddress(buySomeCake, user2);
-		await daoBase.allowActionByAddress(issueTokens, cakeOrderingDAO.address);
-
+		let deployer = await Deployer.new();
+		await daoBase.allowActionByAddress(await daoBase.MANAGE_GROUPS(), deployer.address);
+		await deployer.deploy(daoBase.address, accounts[0], accounts[2], accounts[3]);
+		
 		await daoBase.renounceOwnership();
 	});
 
