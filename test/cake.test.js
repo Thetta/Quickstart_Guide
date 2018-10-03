@@ -1,10 +1,9 @@
 var CakeOrderingOrganizaion = artifacts.require("./CakeOrderingOrganizaion");
-var MintableToken = artifacts.require("./MintableToken");
+var Bakery = artifacts.require("./Bakery");
 
 var StdDaoToken = artifacts.require("./StdDaoToken");
 var DaoStorage = artifacts.require("./DaoStorage");
 var DaoBase = artifacts.require("./DaoBase");
-var Bakery = artifacts.require("./Bakery");
 
 require('chai')
   .use(require('chai-as-promised'))
