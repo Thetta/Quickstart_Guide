@@ -4,6 +4,7 @@ var Bakery = artifacts.require("./Bakery");
 var StdDaoToken = artifacts.require("./StdDaoToken");
 var DaoStorage = artifacts.require("./DaoStorage");
 var DaoBase = artifacts.require("./DaoBase");
+var Deployer = artifacts.require("./Deployer");
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -35,6 +36,9 @@ contract('CakeOrderingOrganizaion', (accounts) => {
 		await deployer.deploy(daoBase.address, accounts[0], accounts[2], accounts[3]);
 		
 		await daoBase.renounceOwnership();
+
+		cakeOrderingDAO = CakeOrderingOrganizaion.at(await deployer.cakeOrderingOrganizaion());
+		bakery = Bakery.at(await deployer.bakery());
 	});
 
 	describe('buySomeCake()', () => {

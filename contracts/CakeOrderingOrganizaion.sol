@@ -20,17 +20,4 @@ contract CakeOrderingOrganizaion is CakeByer, DaoClient {
 	function buySomeCake() public isCanDo(BUY_SOME_CAKE) {
 		buySomeCakeInternal(bakery);
 	}
-
-	function setPermissions(address _boss, address _user) public {
-		// Add some address (user or contract) to Employee group
-		daoBase.addGroupMember("Managers", _boss); 
-		daoBase.allowActionByAddress(daoBase.ISSUE_TOKENS(), _boss);
-
-		// This will allow any address that is a member of "Managers" group 
-		// to execute "issueTokens" method:
-		daoBase.allowActionByAnyMemberOfGroup(BUY_SOME_CAKE, "Managers");
-		        
-		// To allow specific address to execute action without any voting:
-		daoBase.allowActionByAddress(BUY_SOME_CAKE, _user);
-	}
 }
