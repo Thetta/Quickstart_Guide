@@ -1,5 +1,5 @@
-var CakeOrderingDapp = artifacts.require("./CakeOrderingDapp.sol");
+var CakeByer = artifacts.require("./CakeByer.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(CakeOrderingDapp);
+  deployer.deploy(CakeByer);
 };

@@ -28,13 +28,12 @@ contract('CakeOrderingOrganizaion', (accounts) => {
 		store = await DaoStorage.new([token.address],{from: creator});
 		daoBase = await DaoBase.new(store.address,{ from: creator });
 		bakery = await Bakery.new();
-		cakeOrderingDAO = await CakeOrderingOrganizaion.new(bakery.address, daoBase.address, token.address);
-		
+		cakeOrderingDAO = await CakeOrderingOrganizaion.new(bakery.address, daoBase.address);
 
 		const issueTokens = await daoBase.ISSUE_TOKENS();
 		const manageGroups = await daoBase.MANAGE_GROUPS();
 		const buySomeCake = await cakeOrderingDAO.BUY_SOME_CAKE();
-				
+
 		// // // transfer ownership		
 		await token.transferOwnership(daoBase.address);
 		await store.transferOwnership(daoBase.address);
@@ -73,12 +72,6 @@ contract('CakeOrderingOrganizaion', (accounts) => {
 		it('should produce cake', async () => {
 			await cakeOrderingDAO.buySomeCake();
 			assert.equal((await bakery.isCakeProducedForAddress(creator)), true);
-		});
-
-		it('should mint 100 tokens', async () => {
-			await cakeOrderingDAO.buySomeCake();
-			let tokenAddress = MintableToken.at(await cakeOrderingDAO.tokenAddress());
-			assert.equal((await tokenAddress.balanceOf(creator)).toNumber(10), 100);
-		});		
+		});	
 	});
 });

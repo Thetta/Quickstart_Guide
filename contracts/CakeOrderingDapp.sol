@@ -15,26 +15,23 @@ contract Bakery {
 	}
 }
 
-contract CakeOrderingDapp {
+contract CakeByer {
 	function buySomeCakeInternal(Bakery _bakery) internal { 
 		_bakery.buySomeCake(msg.sender);
 	}
 }
 
-contract CakeOrderingOrganizaion is CakeOrderingDapp, DaoClient {
+contract CakeOrderingOrganizaion is CakeByer, DaoClient {
 	bytes32 public constant BUY_SOME_CAKE = keccak256("buySomeCake");
-	address public tokenAddress;
 	DaoBase public daoBase;
 	Bakery public bakery;
 
-	constructor(Bakery _bakery, DaoBase _daoBase, address _tokenAddress) public DaoClient(_daoBase){
+	constructor(Bakery _bakery, DaoBase _daoBase) public DaoClient(_daoBase){
 		bakery = _bakery;
-		tokenAddress = _tokenAddress;
 		daoBase = _daoBase;
 	}
 
 	function buySomeCake() public isCanDo(BUY_SOME_CAKE) {
-		daoBase.issueTokens(tokenAddress, msg.sender, 100);
 		buySomeCakeInternal(bakery);
 	}
 
